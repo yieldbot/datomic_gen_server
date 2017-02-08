@@ -8,7 +8,7 @@ defmodule RegistrationTest do
       true, 
       [{:timeout, 20_000}, {:default_message_timeout, 20_000}, {:name, {:global, :foo}}]
     )
-    :global.send(:foo, {:EXIT, self, :normal})  
+    :global.send(:foo, {:EXIT, self(), :normal})  
   end
   
   test "can register local name" do
@@ -17,7 +17,7 @@ defmodule RegistrationTest do
       true, 
       [{:timeout, 20_000}, {:default_message_timeout, 20_000}, {:name, RegistrationTest}]
     )    
-    send(RegistrationTest, {:EXIT, self, :normal})
+    send(RegistrationTest, {:EXIT, self(), :normal})
   end
   
   test "can start without registering a name" do
@@ -27,6 +27,6 @@ defmodule RegistrationTest do
         true, 
         [{:timeout, 20_000}, {:default_message_timeout, 20_000}]
       )
-    send(pid, {:EXIT, self, :normal})
+    send(pid, {:EXIT, self(), :normal})
   end
 end

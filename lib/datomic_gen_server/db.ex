@@ -811,7 +811,7 @@ defmodule DatomicGenServer.Db do
 
   """  
   @spec as_of(integer) :: {:list, [Exdn.exdn] }
-  def as_of(tx_id), do: clojure_expression(:"datomic.api/as-of", [db, tx_id])
+  def as_of(tx_id), do: clojure_expression(:"datomic.api/as-of", [db(), tx_id])
   
   # TODO Allow dates
   @doc """
@@ -831,7 +831,7 @@ defmodule DatomicGenServer.Db do
 
   """  
   @spec since(integer) :: {:list, [Exdn.exdn] }
-  def since(tx_id), do: clojure_expression(:"datomic.api/since", [db, tx_id])
+  def since(tx_id), do: clojure_expression(:"datomic.api/since", [db(), tx_id])
 
   @doc """
   Convenience shortcut to allw passing a call to the Datomic `history` API function
@@ -841,7 +841,7 @@ defmodule DatomicGenServer.Db do
   supported.
   """  
   @spec history :: {:list, [Exdn.exdn] }
-  def history, do: clojure_expression(:"datomic.api/history", [db])
+  def history, do: clojure_expression(:"datomic.api/history", [db()])
   
   # Bindings and find specifications
   @doc """

@@ -120,7 +120,7 @@ defmodule DatomicGenServerTest do
             :db/doc \"Field #{index}\"
             :db.install/_attribute :db.part/db}]
       """
-      :timer.sleep(:random.uniform(3)) # Mix up the order of sending the messages
+      :timer.sleep(:rand.uniform(3)) # Mix up the order of sending the messages
       {:ok, transaction_result} = DatomicGenServer.transact(DatomicGenServer, data_to_add)
       assert Regex.match?(~r/:db-before \{:basis-t \d+/, transaction_result)
       assert Regex.match?(~r/Field #{index}/, transaction_result)

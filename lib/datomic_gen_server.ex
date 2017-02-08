@@ -627,11 +627,11 @@ defmodule DatomicGenServer do
     # if the Clojure process crashes with an error on startup, using handle_info below.
     Process.flag(:trap_exit, true)
     
-    send(self, {:initialize_jvm, db_uri, create?, startup_wait_millis})
+    send(self(), {:initialize_jvm, db_uri, create?, startup_wait_millis})
     case maybe_process_identifier do
       nil -> nil
-      {:global, identifier} -> :global.register_name(identifier, self)
-      identifier -> Process.register(self, identifier)
+      {:global, identifier} -> :global.register_name(identifier, self())
+      identifier -> Process.register(self(), identifier)
     end
     # if maybe_process_identifier do
     #   Process.register(self, maybe_process_identifier)
@@ -652,7 +652,7 @@ defmodule DatomicGenServer do
   end
   
   defp my_name do
-    Process.info(self) |> Keyword.get(:registered_name) || self |> inspect
+    Process.info(self()) |> Keyword.get(:registered_name) || self() |> inspect
   end
 
   # Implements the GenServer `handle_info` callback for the initial message that 
@@ -663,19 +663,19 @@ defmodule DatomicGenServer do
     port = Port.open({:spawn, '#{command}'}, [:binary, :exit_status, packet: 4, cd: working_directory])
 
     # Block until JVM starts up, or we're not ready
-    send(port, {self, {:command, :erlang.term_to_binary({:ping})}})
+    send(port, {self(), {:command, :erlang.term_to_binary({:ping})}})
     receive do
       # Make sure we're only listening for a message back from the port, not some
       # message from a caller that may have gotten in first.
       {^port, {:data, _}} -> {:noreply, %ProcessState{port: port, message_wait_until_crash: state.message_wait_until_crash}}
       {:EXIT, _, :normal} ->
-        _ = Logger.info("DatomicGenServer #{my_name} port received :normal exit signal; exiting.")
+        _ = Logger.info("DatomicGenServer #{my_name()} port received :normal exit signal; exiting.")
         exit(:normal)
       {:EXIT, _, error} ->
-        _ = Logger.error("DatomicGenServer #{my_name} port exited with error on startup: #{inspect(error)}")
+        _ = Logger.error("DatomicGenServer #{my_name()} port exited with error on startup: #{inspect(error)}")
         exit(:port_exited_with_error)
     after startup_wait_millis -> 
-      _ = Logger.error("DatomicGenServer #{my_name} port startup timed out after startup_wait_millis: [#{startup_wait_millis}]")
+      _ = Logger.error("DatomicGenServer #{my_name()} port startup timed out after startup_wait_millis: [#{startup_wait_millis}]")
       exit(:port_start_timed_out)
     end
   end
@@ -683,7 +683,7 @@ defmodule DatomicGenServer do
   # Handle exit messages
   @spec handle_info({:EXIT, port, term}, ProcessState.t) :: no_return
   def handle_info({:EXIT, _, _}, _) do
-    _ = Logger.warn("DatomicGenServer #{my_name} received exit message.")
+    _ = Logger.warn("DatomicGenServer #{my_name()} received exit message.")
     exit(:port_terminated)
   end
 
@@ -705,7 +705,7 @@ defmodule DatomicGenServer do
     port = state.port
     {datomic_operation, this_msg_timeout} = message
     message_timeout = this_msg_timeout || state.message_wait_until_crash
-    send(port, {self, {:command, :erlang.term_to_binary(datomic_operation)}})
+    send(port, {self(), {:command, :erlang.term_to_binary(datomic_operation)}})
     response = wait_for_reply(port, datomic_operation, message_timeout, this_msg_timeout, state.message_wait_until_crash)
     {:reply, response, state}
   end
@@ -727,7 +727,7 @@ defmodule DatomicGenServer do
     response = receive do 
       {^port, {:data, b}} -> :erlang.binary_to_term(b) 
     after message_timeout -> 
-      _ = Logger.error("DatomicGenServer #{my_name} port unresponsive with message_wait_until_crash [#{message_wait_until_crash}] and this_msg_timeout [#{this_msg_timeout}]")
+      _ = Logger.error("DatomicGenServer #{my_name()} port unresponsive with message_wait_until_crash [#{message_wait_until_crash}] and this_msg_timeout [#{this_msg_timeout}]")
       exit(:port_unresponsive)
     end
     
@@ -767,7 +767,7 @@ defmodule DatomicGenServer do
   @spec handle_cast(datomic_message, ProcessState.t) :: {:noreply, ProcessState.t}
   def handle_cast(message, state) do
     port = state.port
-    send(port, {self, {:command, :erlang.term_to_binary(message)}})
+    send(port, {self(), {:command, :erlang.term_to_binary(message)}})
     {:noreply, state}
   end
 end

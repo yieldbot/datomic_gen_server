@@ -277,7 +277,7 @@ defmodule DatomicGenServer.EntityMap do
   @spec new_attribute_map(term, term, term, MapSet.t) :: map
   defp new_attribute_map(entity_id, attr, value, cardinality_many) do
     new_map = add_to_attribute_map(%{}, attr, value, cardinality_many)
-    add_to_attribute_map(new_map, e_key, entity_id, cardinality_many) 
+    add_to_attribute_map(new_map, e_key(), entity_id, cardinality_many) 
   end
 
   # If we have multiple DataTuples, each with a scalar value for a cardinality many
@@ -378,7 +378,7 @@ defmodule DatomicGenServer.EntityMap do
   @spec empty_entity?(map) :: boolean
   defp empty_entity?(attr_map) do
     attr_map
-    |> Map.delete(e_key)
+    |> Map.delete(e_key())
     |> Enum.filter(fn({_, value}) ->     
         case value do
           %MapSet{} -> if MapSet.size(value) == 0 do false else true end
@@ -665,7 +665,7 @@ defmodule DatomicGenServer.EntityMap do
   # If the :"datom/e" key is in the map, we don't remove it. Other indexed
   # attributes will be removed if they are in the map to be retracted.
   defp remove_attribute_value({attr, value}, attr_map) do
-    attribute_is_datom_e = attr == e_key
+    attribute_is_datom_e = attr == e_key()
     old_value = Map.get(attr_map, attr)
     # If the value to remove is nil, it has already been changed to the null marker {}.
     case {old_value, value} do

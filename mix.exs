@@ -10,11 +10,11 @@ defmodule DatomicGenServer.Mixfile do
        An Elixir GenServer that communicates with a Clojure Datomic peer running 
        in the JVM, using clojure-erlastic.
        """,
-     package: package,
+     package: package(),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps,
-     aliases: aliases]
+     deps: deps(),
+     aliases: aliases()]
   end
 
   # Configuration for the OTP application
@@ -34,7 +34,8 @@ defmodule DatomicGenServer.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [ {:exdn,     "~> 2.1.2"},
+    [ {:calendar, "~> 0.16.1", override: true},
+      {:exdn,     "~> 2.1.2"},
       {:ex_doc,   "~> 0.11",  only: :dev},
       {:earmark,  "~> 0.2", only: :dev},
       {:dialyxir, "~> 0.3", only: [:dev]}]
