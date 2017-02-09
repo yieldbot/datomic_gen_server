@@ -1024,7 +1024,7 @@ defmodule DatomicGenServer.Db do
   """
   @spec _pull({:symbol, atom}, [Exdn.exdn]) :: {:list, [Exdn.exdn]}
   def _pull({:symbol, entity_var}, pattern_clauses) do
-    clojure_expression(:pull, [entity_var, pattern_clauses])
+    clojure_expression(:pull, [{:symbol, entity_var}, pattern_clauses])
   end
 
   @doc """

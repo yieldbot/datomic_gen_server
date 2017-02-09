@@ -354,6 +354,11 @@ defmodule DatomicGenServer.DbTest do
     assert [{:list, [{:symbol, :>}, {:symbol, :"?e"}, {:symbol, :"?idmin"}]}] == expression
   end
 
+  test "Creates a pull expression for find clause" do
+    expression = Db._pull(Db.q?("e"), Db.star())
+    assert {:list, [{:symbol, :pull}, {:symbol, :"?e"}, [symbol: :*]]} == expression
+  end
+
   # TODO Add tests that use inS, history, bindings and find specifications,
   # and clauses.
   
