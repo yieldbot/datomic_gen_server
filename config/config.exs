@@ -28,3 +28,6 @@ config :datomic_gen_server, timeout_on_call: 20_000
 # The peer will also write messages
 # and exceptions to STDERR.
 # config :datomic_gen_server, :debug_messages? true
+
+# Default lein profile to build uberjar with
+config :datomic_gen_server, lein_profile: "datomic"

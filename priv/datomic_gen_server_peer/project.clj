@@ -8,9 +8,9 @@
                  [vvvvalvalval/datomock "0.1.0"]
                  [net.phobot.datomic/seed "3.0.0"]
                 ]
-  :repositories {"my.datomic.com" {:url "https://my.datomic.com/repo"
-                                   :creds :gpg}}
   :main datomic_gen_server.peer
+  :profiles {:datomic {:repositories {"my.datomic.com" {:url "https://my.datomic.com/repo"
+                                                        :creds :gpg}}}}
   :aot :all)
 
 ; If you are using Datomic Pro, the repository above will be necessary and you'll

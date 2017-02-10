@@ -75,11 +75,12 @@ defmodule DatomicGenServer.Mixfile do
   end
 
   defp uberjar(_) do
+    lein_profile = Application.fetch_env!(:datomic_gen_server, :lein_profile)
     peer_dir = Path.join [System.cwd(), "priv", "datomic_gen_server_peer" ]
     if [peer_dir, "target", "peer*standalone.jar"] |> Path.join |> Path.wildcard |> Enum.empty? do
       pwd = System.cwd()
       File.cd(peer_dir)
-      Mix.shell.cmd "lein uberjar"
+      Mix.shell.cmd "lein with-profile #{lein_profile} uberjar"
       File.cd(pwd)
     end
   end
