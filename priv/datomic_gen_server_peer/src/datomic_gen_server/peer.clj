@@ -172,6 +172,10 @@
       [:ping]
           (let [response [:ok :ping]]
             (new-state response database connection db-map))
+      [:drop db-url]
+          (do
+            (datomic/delete-database db-url)
+            (datomic/shutdown true) nil)
       [:stop] (do (datomic/shutdown false) nil) ; For testing from Clojure; does not release Clojure resources
       [:exit] (do (datomic/shutdown true) nil) ; Shuts down Clojure resources as part of JVM shutdown
       nil (do (datomic/shutdown true) nil)) ; Handle close of STDIN - parent is gone

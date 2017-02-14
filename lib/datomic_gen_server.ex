@@ -590,6 +590,11 @@ defmodule DatomicGenServer do
     msg_unique_id = :erlang.unique_integer([:monotonic])
     call_server(server_identifier, {:unmock, msg_unique_id}, options)
   end
+
+  @spec drop(GenServer.server, String.t) :: datomic_result
+  def drop(server_identifier, db_uri) do
+    GenServer.cast(server_identifier, {:drop, db_uri})
+  end
   
   @spec call_server(GenServer.server, datomic_message, [send_option]) :: datomic_result
   defp call_server(server_identifier, request, options) do
